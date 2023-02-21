@@ -15,7 +15,7 @@ wn.tracer(0)
 # head of the snake
 head = turtle.Turtle()
 head.shape("square")
-head.color("white")
+head.color("red")
 head.penup()
 head.goto(-280, -280)
 head.direction = "Stop"
@@ -184,7 +184,7 @@ def fill():
                     grid[y][x] = "-"
                     done = False
 
-    #filling
+    #filling algorithm
     head.color("red")
     stop = False
     d = "up" #direction
@@ -196,7 +196,8 @@ def fill():
         w = [grid[y_sq-1][x_sq-1], grid[y_sq-1][x_sq], grid[y_sq-1][x_sq+1],
              grid[y_sq][x_sq-1], grid[y_sq][x_sq], grid[y_sq][x_sq+1],
              grid[y_sq+1][x_sq-1], grid[y_sq+1][x_sq], grid[y_sq+1][x_sq+1]] #window
-        '''
+
+        '''Logic for determining criticality:
         w = [0h,1a,2b,3g,4x,5c,6f,7e,8d]
         a'*c'*e'*g'*(f*h+b'*d*f+b'*d*h+b*d+b*d'*f+b*d'*h)
         + a'*c'*e'*g*(b+d)
@@ -210,74 +211,84 @@ def fill():
         + a*c'*e'*g*d
         + a*c'*e'*g'*(d+f)
         '''
-        critical = (w[1] == "O" and w[5] == "O" and w[7] == "O" and w[3] == "O" and (w[6] != "O" and
-            w[0] != "O" or w[2] == "O" and w[8] != "O" and w[6] != "O" or w[2] == "O" and w[8] != "O" and
-            w[0] != "O" or w[2] != "O" and w[8] != "O" or w[2] != "O" and w[8] == "O" and w[6] != "O" or w[2] != "O" and
-            w[8] == "O" and w[0] != "O") or
-            w[1] == "O" and w[5] == "O" and w[7] == "O" and w[3] != "O" and (w[2] != "O" or w[8] != "O") or
-            w[1] == "O" and w[5] == "O" and w[7] != "O" and w[3] != "O" and w[2] != "O" or
-            w[1] == "O" and w[5] == "O" and w[7] != "O" and w[3] == "O" and (w[0] != "O" or w[2] != "O") or
-            w[1] == "O" and w[5] != "O" and w[7] != "O" and w[3] == "O" and w[0] != "O" or
-            w[1] == "O" and w[5] != "O" and w[7] == "O" and w[3] != "O" or
-            w[1] == "O" and w[5] != "O" and w[7] == "O" and w[3] == "O" and (w[6] != "O" or w[0] != "O") or
-            w[1] != "O" and w[5] != "O" and w[7] == "O" and w[3] == "O" and w[6] != "O" or
-            w[1] != "O" and w[5] == "O" and w[7] != "O" and w[3] == "O" or
-            w[1] != "O" and w[5] == "O" and w[7] == "O" and w[3] != "O" and w[8] != "O" or
-            w[1] != "O" and w[5] == "O" and w[7] == "O" and w[3] == "O" and (w[8] != "O" or w[6] != "O"))
+        critical = (w[1] == "O" and w[5] == "O" and w[7] == "O" and w[3] == (
+            "O") and (w[6] != "O" and w[0] != "O" or w[2] == "O" and w[8]
+                      != "O" and w[6] != "O" or w[2] == "O" and w[8] != "O" and
+                      w[0] != "O" or w[2] != "O" and w[8] != "O" or w[2] != (
+                          "O") and w[8] == "O" and w[6] != "O" or w[2] != "O" and
+                      w[8] == "O" and w[0] != "O") or
+                    w[1] == "O" and w[5] == "O" and w[7] == "O" and w[3] != (
+                        "O") and (w[2] != "O" or w[8] != "O") or
+                    w[1] == "O" and w[5] == "O" and w[7] != "O" and w[3] != "O" and
+                    w[2] != "O" or
+                    w[1] == "O" and w[5] == "O" and w[7] != "O" and w[3] == (
+                        "O") and (w[0] != "O" or w[2] != "O") or
+                    w[1] == "O" and w[5] != "O" and w[7] != "O" and w[3] == "O" and
+                    w[0] != "O" or
+                    w[1] == "O" and w[5] != "O" and w[7] == "O" and w[3] != "O" or
+                    w[1] == "O" and w[5] != "O" and w[7] == "O" and w[3] == (
+                        "O") and (w[6] != "O" or w[0] != "O") or
+                    w[1] != "O" and w[5] != "O" and w[7] == "O" and w[3] == "O" and
+                    w[6] != "O" or
+                    w[1] != "O" and w[5] == "O" and w[7] != "O" and w[3] == "O" or
+                    w[1] != "O" and w[5] == "O" and w[7] == "O" and w[3] != "O" and
+                    w[8] != "O" or
+                    w[1] != "O" and w[5] == "O" and w[7] == "O" and w[3] == (
+                        "O") and (w[8] != "O" or w[6] != "O"))
 
         if d == "up":
             if w[5] == "O":  # square to right
                 d = "right"
                 goright_fill(x_coordinates, y_coordinates, critical)
-            elif w[1] == "O": #square above
+            elif w[1] == "O":  # square above
                 d = "up"
                 goup_fill(x_coordinates, y_coordinates, critical)
-            elif w[3] == "O": #square to left
+            elif w[3] == "O":  # square to left
                 d = "left"
                 goleft_fill(x_coordinates, y_coordinates, critical)
-            elif w[7] == "O": #square below
+            elif w[7] == "O":  # square below
                 d = "down"
                 godown_fill(x_coordinates, y_coordinates, critical)
             else:
                 stop = True
         elif d == "right":
-            if w[7] == "O": #square below
+            if w[7] == "O":  # square below
                 d = "down"
                 godown_fill(x_coordinates, y_coordinates, critical)
             elif w[5] == "O":  # square to right
                 d = "right"
                 goright_fill(x_coordinates, y_coordinates, critical)
-            elif w[1] == "O": #square above
+            elif w[1] == "O":  # square above
                 d = "up"
                 goup_fill(x_coordinates, y_coordinates, critical)
-            elif w[3] == "O": #square to left
+            elif w[3] == "O":  # square to left
                 d = "left"
                 goleft_fill(x_coordinates, y_coordinates, critical)
             else:
                 stop = True
         elif d == "down":
-            if w[3] == "O": #square to left
+            if w[3] == "O":  # square to left
                 d = "left"
                 goleft_fill(x_coordinates, y_coordinates, critical)
-            elif w[7] == "O": #square below
+            elif w[7] == "O":  # square below
                 d = "down"
                 godown_fill(x_coordinates, y_coordinates, critical)
             elif w[5] == "O":  # square to right
                 d = "right"
                 goright_fill(x_coordinates, y_coordinates, critical)
-            elif w[1] == "O": #square above
+            elif w[1] == "O":  # square above
                 d = "up"
                 goup_fill(x_coordinates, y_coordinates, critical)
             else:
                 stop = True
         elif d == "left":
-            if w[1] == "O": #square above
+            if w[1] == "O":  # square above
                 d = "up"
                 goup_fill(x_coordinates, y_coordinates, critical)
-            elif w[3] == "O": #square to left
+            elif w[3] == "O":  # square to left
                 d = "left"
                 goleft_fill(x_coordinates, y_coordinates, critical)
-            elif w[7] == "O": #square below
+            elif w[7] == "O":  # square below
                 d = "down"
                 godown_fill(x_coordinates, y_coordinates, critical)
             elif w[5] == "O":  # square to right
@@ -288,95 +299,98 @@ def fill():
 
     print_grid()
 
-
 def goup_fill(x_coordinates, y_coordinates, critical):
-    if head.direction != "down":
-        head.direction = "up"
+    head.direction = "up"
 
-        # Adding segment
-        new_segment = turtle.Turtle()
-        new_segment.speed(0)
-        new_segment.shape("square")
-        new_segment.color("green")  # tail colour
-        new_segment.penup()
-        if grid[-1*(int((head.ycor()-min(y_coordinates))/20) + 1)][int((head.xcor()-min(x_coordinates))/20)] == "O":
-            if critical:
-                grid[-1 * (int((head.ycor() - min(y_coordinates)) / 20) + 1)][int((head.xcor() - min(x_coordinates)) / 20)] = "2"
-            else:
-                grid[-1*(int((head.ycor()-min(y_coordinates))/20) + 1)][int((head.xcor()-min(x_coordinates))/20)] = "1"
-        y = head.ycor()
-        x = head.xcor()
-        segments.append(new_segment)
-        new_segment.setx(x)
-        new_segment.sety(y)
-        move()
-
-
+    # Adding segment
+    new_segment = turtle.Turtle()
+    new_segment.speed(0)
+    new_segment.shape("square")
+    new_segment.color("green")  # tail colour
+    new_segment.penup()
+    if grid[-1 * (int((head.ycor() - min(y_coordinates)) / 20) + 1)][
+        int((head.xcor() - min(x_coordinates)) / 20)] == "O":
+        if critical:
+            grid[-1 * (int((head.ycor() - min(y_coordinates)) / 20) + 1)][
+                int((head.xcor() - min(x_coordinates)) / 20)] = "O"
+        else:
+            grid[-1 * (int((head.ycor() - min(y_coordinates)) / 20) + 1)][
+                int((head.xcor() - min(x_coordinates)) / 20)] = "1"
+    y = head.ycor()
+    x = head.xcor()
+    segments.append(new_segment)
+    new_segment.setx(x)
+    new_segment.sety(y)
+    move()
 
 def godown_fill(x_coordinates, y_coordinates, critical):
-    if head.direction != "up":
-        head.direction = "down"
+    head.direction = "down"
 
-
-        new_segment = turtle.Turtle()
-        new_segment.speed(0)
-        new_segment.shape("square")
-        new_segment.color("green")  # tail colour
-        new_segment.penup()
-        if grid[-1*(int((head.ycor()-min(y_coordinates))/20) + 1)][int((head.xcor()-min(x_coordinates))/20)] == "O":
-            if critical:
-                grid[-1 * (int((head.ycor() - min(y_coordinates)) / 20) + 1)][int((head.xcor() - min(x_coordinates)) / 20)] = "2"
-            else:
-                grid[-1*(int((head.ycor()-min(y_coordinates))/20) + 1)][int((head.xcor()-min(x_coordinates))/20)] = "1"
-        y = head.ycor()
-        x = head.xcor()
-        segments.append(new_segment)
-        new_segment.setx(x)
-        new_segment.sety(y)
-        move()
+    new_segment = turtle.Turtle()
+    new_segment.speed(0)
+    new_segment.shape("square")
+    new_segment.color("green")  # tail colour
+    new_segment.penup()
+    if grid[-1 * (int((head.ycor() - min(y_coordinates)) / 20) + 1)][
+        int((head.xcor() - min(x_coordinates)) / 20)] == "O":
+        if critical:
+            grid[-1 * (int((head.ycor() - min(y_coordinates)) / 20) + 1)][
+                int((head.xcor() - min(x_coordinates)) / 20)] = "O"
+        else:
+            grid[-1 * (int((head.ycor() - min(y_coordinates)) / 20) + 1)][
+                int((head.xcor() - min(x_coordinates)) / 20)] = "1"
+    y = head.ycor()
+    x = head.xcor()
+    segments.append(new_segment)
+    new_segment.setx(x)
+    new_segment.sety(y)
+    move()
 
 def goleft_fill(x_coordinates, y_coordinates, critical):
-    if head.direction != "right":
-        head.direction = "left"
+    head.direction = "left"
 
-
-        new_segment = turtle.Turtle()
-        new_segment.speed(0)
-        new_segment.shape("square")
-        new_segment.color("green")  # tail colour
-        new_segment.penup()
-        if grid[-1*(int((head.ycor()-min(y_coordinates))/20) + 1)][int((head.xcor()-min(x_coordinates))/20)] == "O":
-            if critical:
-                grid[-1*(int((head.ycor()-min(y_coordinates))/20) + 1)][int((head.xcor()-min(x_coordinates))/20)] = "2"
-            else:
-                grid[-1*(int((head.ycor()-min(y_coordinates))/20) + 1)][int((head.xcor()-min(x_coordinates))/20)] = "1"
-        y = head.ycor()
-        x = head.xcor()
-        segments.append(new_segment)
-        new_segment.setx(x)
-        new_segment.sety(y)
-        move()
+    new_segment = turtle.Turtle()
+    new_segment.speed(0)
+    new_segment.shape("square")
+    new_segment.color("green")  # tail colour
+    new_segment.penup()
+    if grid[-1 * (int((head.ycor() - min(y_coordinates)) / 20) + 1)][
+        int((head.xcor() - min(x_coordinates)) / 20)] == "O":
+        if critical:
+            grid[-1 * (int((head.ycor() - min(y_coordinates)) / 20) + 1)][
+                int((head.xcor() - min(x_coordinates)) / 20)] = "O"
+        else:
+            grid[-1 * (int((head.ycor() - min(y_coordinates)) / 20) + 1)][
+                int((head.xcor() - min(x_coordinates)) / 20)] = "1"
+    y = head.ycor()
+    x = head.xcor()
+    segments.append(new_segment)
+    new_segment.setx(x)
+    new_segment.sety(y)
+    move()
 
 def goright_fill(x_coordinates, y_coordinates, critical):
-    if head.direction != "left":
-        head.direction = "right"
-        new_segment = turtle.Turtle()
-        new_segment.speed(0)
-        new_segment.shape("square")
-        new_segment.color("green")  # tail colour
-        new_segment.penup()
-        if grid[-1*(int((head.ycor()-min(y_coordinates))/20) + 1)][int((head.xcor()-min(x_coordinates))/20)] == "O":
-            if critical:
-                grid[-1*(int((head.ycor()-min(y_coordinates))/20) + 1)][int((head.xcor()-min(x_coordinates))/20)] = "2"
-            else:
-                grid[-1*(int((head.ycor()-min(y_coordinates))/20) + 1)][int((head.xcor()-min(x_coordinates))/20)] = "1"
-        y = head.ycor()
-        x = head.xcor()
-        segments.append(new_segment)
-        new_segment.setx(x)
-        new_segment.sety(y)
+    head.direction = "right"
+    new_segment = turtle.Turtle()
+    new_segment.speed(0)
+    new_segment.shape("square")
+    new_segment.color("green")  # tail colour
+    new_segment.penup()
+    if grid[-1 * (int((head.ycor() - min(y_coordinates)) / 20) + 1)][
+        int((head.xcor() - min(x_coordinates)) / 20)] == "O":
+        if critical:
+            grid[-1 * (int((head.ycor() - min(y_coordinates)) / 20) + 1)][
+                int((head.xcor() - min(x_coordinates)) / 20)] = "O"
+        else:
+            grid[-1 * (int((head.ycor() - min(y_coordinates)) / 20) + 1)][
+                int((head.xcor() - min(x_coordinates)) / 20)] = "1"
+    y = head.ycor()
+    x = head.xcor()
+    segments.append(new_segment)
+    new_segment.setx(x)
+    new_segment.sety(y)
 
-        move()
+    move()
 
 wn.listen()
 wn.onkeypress(group, "w")
